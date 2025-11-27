@@ -1,0 +1,9 @@
+[package]
+name = "star_text_lib"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+regex = "1.12.2"
+terminal_size = "0.4.3"
+unicode-width = "0.2.2"
