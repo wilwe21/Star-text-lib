@@ -1,7 +1,5 @@
-mod colors;
 mod text;
 mod ansi_comapct;
 mod future;
 
-pub use colors::*;
 pub use text::*;

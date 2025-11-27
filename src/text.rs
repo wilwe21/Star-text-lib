@@ -3,7 +3,7 @@ use std::{fmt::Alignment};
 use regex::Regex;
 use unicode_width::UnicodeWidthStr;
 
-use crate::{ansi_comapct::*, colors::fg_color, future::*};
+use crate::{ansi_comapct::*, future::*};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum FONT {
@@ -27,7 +27,7 @@ pub struct Color {
 
 impl Text {
     pub fn new(string: &str) -> Self {
-        let fg = fg_color.clone();
+        let fg = Color { red: 255, green: 255, blue: 255 };
         let font = FONT::Future;
         return Self {
             content: string.to_string(),
