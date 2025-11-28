@@ -1,4 +1,4 @@
-use std::{fmt::Alignment};
+use std::fmt::{Alignment, format};
 
 use regex::Regex;
 use unicode_width::UnicodeWidthStr;
@@ -92,6 +92,7 @@ impl std::fmt::Display for Text {
                 }
             }
             let size = tester.clone().into_iter().map(|x| x.width()).max().unwrap_or(3) + 2;
+            let sdos = size - 2;
             let finfin;
             if let Some(bg) = self.bg_color.clone() {
                 finfin = tester.clone().into_iter().map(|x|
@@ -107,23 +108,68 @@ impl std::fmt::Display for Text {
             } else {
                 if let Some(fg) = self.fg_color.clone() {
                     finfin = tester.clone().into_iter().map(|x| 
-                        x.split("\n").map(|z| format!("{}{}{}\n", fg, z, Color::reset())).collect::<Vec<String>>().join("\n")).collect::<Vec<String>>();
+                        x.split("\n").map(|z| {
+                            let padp1 = sdos.checked_sub(z.width()).unwrap_or(0);
+                            let padp2 = padp1.checked_div(2).unwrap_or(0);
+                            if padp2 > 0 {
+                                format!("\x1B[{}C{}{}{}\x1B[{}C\n", padp2, fg, z, Color::reset(), padp2)
+                            } else {
+                                format!("{}{}{}\n", fg, z, Color::reset())
+                            }
+                        }).collect::<Vec<String>>().join("\n")).collect::<Vec<String>>();
                 } else {
-                    finfin = tester
+                    finfin = tester.clone().into_iter().map(|x| 
+                        x.split("\n").map(|z| {
+                            let padp1 = sdos.checked_sub(z.width()).unwrap_or(0);
+                            let padp2 = padp1.checked_div(2).unwrap_or(0);
+                            if padp2 > 0 {
+                                format!("\x1B[{}C{}\x1B[{}C\n", padp2, z, padp2)
+                            } else {
+                                format!("{}\n", z)
+                            }
+                        }).collect::<Vec<String>>().join("\n")).collect::<Vec<String>>();
                 }
             }
+            let mut finfinfin: Vec<String> = vec!("\n".to_string());
             let fin_size = size.checked_sub(2).unwrap_or(1);
             if let Some(bg) = self.bg_color.clone() {
                 if f.alternate() {
-                    f.write_str(&format!("{}▄{}▄{}\n", bg, "█".repeat(fin_size), Color::reset()));
+                    finfinfin.push(format!("{}▄{}▄{}\n", bg, "█".repeat(fin_size), Color::reset()));
                 }
             }
             for fi in finfin {
-                f.write_str(&fi);
+                finfinfin.push(fi);
             }
             if let Some(bg) = self.bg_color.clone() {
                 if f.alternate() {
-                    f.write_str(&format!("{}▀{}▀{}", bg, "█".repeat(fin_size), Color::reset()));
+                    finfinfin.push(format!("{}▀{}▀{}", bg, "█".repeat(fin_size), Color::reset()));
+                }
+            }
+            let ali: Option<Vec<String>>;
+            if let Some(align) = f.align() {
+                if let Some(width) = f.width() {
+                    if self.bg_color.is_some() {
+                        ali = Some(vertical_align(finfinfin.clone(), align, width, 20));
+                    } else {
+                        ali = Some(vertical_align(finfinfin.clone(), align, width, 20));
+                    }
+                } else {
+                    ali = None;
+                }
+            }  else {
+                ali = None;
+            }
+            if let Some(aligned) = ali {
+                for (i, fi) in aligned.iter().enumerate() {
+                    if i != 0 {
+                        f.write_str(&fi);
+                    }
+                }
+            } else {
+                for (i, fi) in finfinfin.iter().enumerate() {
+                    if i != 0 {
+                        f.write_str(&fi);
+                    }
                 }
             }
             return Ok(());
@@ -146,6 +192,7 @@ impl std::fmt::Display for Text {
                 }
             }
             let size = tester.clone().into_iter().map(|x| x.width()).max().unwrap_or(3) + 2;
+            let sdos = size.checked_sub(2).unwrap_or(3);
             let finfin;
             if let Some(bg) = self.bg_color.clone() {
                 finfin = tester.clone().into_iter().map(|x|
@@ -160,24 +207,69 @@ impl std::fmt::Display for Text {
                 ).collect::<Vec<String>>();
             } else {
                 if let Some(fg) = self.fg_color.clone() {
-                    finfin = tester.clone().into_iter().map(|x|
-                        x.split("\n").map(|z| format!("{}{}{}\n", fg, z, Color::reset())).collect::<Vec<String>>().join("\n")).collect::<Vec<String>>();
+                    finfin = tester.clone().into_iter().map(|x| 
+                        x.split("\n").map(|z| {
+                            let padp1 = sdos.checked_sub(z.width()).unwrap_or(0);
+                            let padp2 = padp1.checked_div(2).unwrap_or(0);
+                            if padp2 > 0 {
+                                format!("\x1B[{}C{}{}{}\x1B[{}C\n", padp2, fg, z, Color::reset(), padp2)
+                            } else {
+                                format!("{}{}{}\n", fg, z, Color::reset())
+                            }
+                        }).collect::<Vec<String>>().join("\n")).collect::<Vec<String>>();
                 } else {
-                    finfin = tester
+                    finfin = tester.clone().into_iter().map(|x| 
+                        x.split("\n").map(|z| {
+                            let padp1 = sdos.checked_sub(z.width()).unwrap_or(0);
+                            let padp2 = padp1.checked_div(2).unwrap_or(0);
+                            if padp2 > 0 {
+                                format!("\x1B[{}C{}\x1B[{}C\n", padp2, z, padp2)
+                            } else {
+                                format!("{}\n", z)
+                            }
+                        }).collect::<Vec<String>>().join("\n")).collect::<Vec<String>>();
                 }
             }
+            let mut finfinfin: Vec<String> = vec!("\n".to_string());
             let fin_size = size.checked_sub(2).unwrap_or(1);
             if let Some(bg) = self.bg_color.clone() {
                 if f.alternate() {
-                    f.write_str(&format!("{}▄{}▄{}\n", bg, "█".repeat(fin_size), Color::reset()));
+                    finfinfin.push(format!("{}▄{}▄{}\n", bg, "█".repeat(fin_size), Color::reset()));
                 }
             }
             for fi in finfin {
-                f.write_str(&fi);
+                finfinfin.push(fi);
             }
             if let Some(bg) = self.bg_color.clone() {
                 if f.alternate() {
-                    f.write_str(&format!("{}▀{}▀{}", bg, "█".repeat(fin_size), Color::reset()));
+                    finfinfin.push(format!("{}▀{}▀{}", bg, "█".repeat(fin_size), Color::reset()));
+                }
+            }
+            let ali: Option<Vec<String>>;
+            if let Some(align) = f.align() {
+                if let Some(width) = f.width() {
+                    if self.bg_color.is_some() {
+                        ali = Some(vertical_align(finfinfin.clone(), align, width, size));
+                    } else {
+                        ali = Some(vertical_align(finfinfin.clone(), align, width, sdos));
+                    }
+                } else {
+                    ali = None;
+                }
+            }  else {
+                ali = None;
+            }
+            if let Some(aligned) = ali {
+                for (i, fi) in aligned.iter().enumerate() {
+                    if i != 0 {
+                        f.write_str(&fi);
+                    }
+                }
+            } else {
+                for (i, fi) in finfinfin.iter().enumerate() {
+                    if i != 0 {
+                        f.write_str(&fi);
+                    }
                 }
             }
             return Ok(());
@@ -330,6 +422,39 @@ impl std::fmt::Display for Text {
         }
         Ok(())
     }
+}
+
+fn vertical_align(list: Vec<String>, align: Alignment, width: usize, maxwidth: usize) -> Vec<String> {
+    let fin: Vec<String>;
+    match align {
+        Alignment::Left => {
+            fin = list.into_iter().map(|x| 
+                x.split("\n").filter(|y| y != &"").map(|z| 
+                    format!("\x1B[{}C{}", width,z)
+                    ).collect::<Vec<String>>().join("\n")
+                ).collect::<Vec<String>>();
+        },
+        Alignment::Right => {
+            fin = list.into_iter().map(|x| 
+                x.split("\n").filter(|y| y != &"").map(|z| 
+                    format!("{}\x1B[{}C\n", z, width)
+                    ).collect::<Vec<String>>().join("\n")
+                ).collect::<Vec<String>>();
+        },
+        Alignment::Center => {
+            let pad = width.checked_sub(maxwidth).unwrap_or(0).checked_div(2).unwrap_or(0);
+            if pad > 0 {
+                fin = list.into_iter().map(|x| 
+                    x.split("\n").filter(|y| y != &"").map(|z| {
+                        format!("\x1B[{}C{}\x1B[{}C\n", pad, z, pad)
+                    }).collect::<Vec<String>>().join("\n")
+                    ).collect::<Vec<String>>();
+            } else {
+                fin = list;
+            }
+        },
+    }
+    return fin;
 }
 
 pub fn repalce_forward(text: &str) -> String {
