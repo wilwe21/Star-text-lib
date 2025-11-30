@@ -11,7 +11,7 @@ pub enum FONT {
     Future
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub struct Text {
     pub content: String,
     pub fg_color: Option<Color>,
