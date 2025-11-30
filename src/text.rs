@@ -5,20 +5,20 @@ use unicode_width::UnicodeWidthStr;
 
 use crate::{ansi_comapct::*, future::*};
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FONT {
     AnsiCompat,
     Future
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct Text {
     pub content: String,
     pub fg_color: Option<Color>,
     pub bg_color: Option<Color>,
     pub font: FONT,
 }
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct Color {
     pub red: u8,
     pub green: u8,
